@@ -1,8 +1,8 @@
-//models folder/rile is meant to hold schemas
-const mongoose = require("mongoose");
-const validator = require("validator");
+// models folder/rile is meant to hold schemas
+const mongoose = require('mongoose');
+const validator = require('validator');
 
-//Clothing item Schema/blueprint
+// Clothing item Schema/blueprint
 const ClothingItem = mongoose.Schema({
   name: {
     type: String,
@@ -12,7 +12,7 @@ const ClothingItem = mongoose.Schema({
   },
   weather: {
     type: String,
-    enum: ["hot", "warm", "cold"],
+    enum: ['hot', 'warm', 'cold'],
     required: true,
   },
   imageUrl: {
@@ -22,16 +22,16 @@ const ClothingItem = mongoose.Schema({
       validator(value) {
         return validator.isURL(value);
       },
-      message: "You must enter a valid URL",
+      message: 'You must enter a valid URL',
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   likes: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     default: [],
   },
   createdAt: {
@@ -40,4 +40,4 @@ const ClothingItem = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("ClothingItem", ClothingItem);
+module.exports = mongoose.model('ClothingItem', ClothingItem);

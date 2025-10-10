@@ -1,6 +1,6 @@
-//controllers are meant to handle the req,res for the router
-//controllers for getUsers, getUser, createUser
-const User = require("../models/User.js");
+// controllers are meant to handle the req,res for the router
+// controllers for getUsers, getUser, createUser
+const User = require('../models/User');
 
 // getUsers
 const getUsers = (req, res) => {
@@ -15,7 +15,7 @@ const getUsers = (req, res) => {
     });
 };
 
-//getUser
+// getUser
 const getUser = (req, res) => {
   const { userId } = req.params;
 
@@ -23,30 +23,30 @@ const getUser = (req, res) => {
     .then((user) => {
       // 1. Check for 404: If Mongoose returns null (user not found)
       if (!user) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: 'User not found' });
       }
 
       // SUCCESS: User found
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       console.error(err);
 
       // 2. Check for 400: If the ID format is invalid (Mongoose CastError)
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid user ID format" });
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Invalid user ID format' });
       }
 
       // 3. Handle 500: Any other server/database error
       return res
         .status(500)
-        .send({ message: "An error has occurred on the server" });
+        .send({ message: 'An error has occurred on the server' });
     });
 };
 
-//createUser
+// createUser
 const createUser = (req, res) => {
-  //declared 2 variables from http request body
+  // declared 2 variables from http request body
   const { name, avatar } = req.body;
 
   User.create({ name, avatar })
@@ -56,13 +56,13 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
 
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
 
       return res
         .status(500)
-        .send({ message: "An error has occurred on the server" });
+        .send({ message: 'An error has occurred on the server' });
     });
 };
 

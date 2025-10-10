@@ -1,8 +1,8 @@
-//models folder/rile is meant to hold schemas
-const mongoose = require("mongoose");
-const validator = require("validator");
+// models folder/rile is meant to hold schemas
+const mongoose = require('mongoose');
+const validator = require('validator');
 
-//user Schema/blueprint
+// user Schema/blueprint
 const User = mongoose.Schema({
   name: {
     type: String,
@@ -17,9 +17,9 @@ const User = mongoose.Schema({
       validator(value) {
         return validator.isURL(value);
       },
-      message: "You must enter a valid URL",
+      message: 'You must enter a valid URL',
     },
   },
 });
 
-module.exports = mongoose.model("User", User);
+module.exports = mongoose.model('User', User);
