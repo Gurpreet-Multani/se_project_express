@@ -8,8 +8,6 @@ const mainRouter = require("./routes");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-app.listen(PORT, () => {});
-
 //MongoDb/mongoose
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
@@ -26,5 +24,8 @@ app.use((req, res, next) => {
 
 //users.js Routes
 app.use("/", mainRouter);
+
+//app/listen
+app.listen(PORT, () => {});
 
 module.exports = app;

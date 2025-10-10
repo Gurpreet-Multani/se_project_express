@@ -1,6 +1,6 @@
 //controllers are meant to handle the req,res for the router
 //controllers for getUsers, getUser, createUser
-const User = require("../models/User");
+const User = require("../models/User.js");
 
 // getUsers
 const getUsers = (req, res) => {
