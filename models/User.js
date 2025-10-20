@@ -1,7 +1,7 @@
 // models folder/rile is meant to hold schemas
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 // user Schema/blueprint
 // eslint-disable-next-line no-useless-escape
@@ -19,7 +19,7 @@ const User = mongoose.Schema({
       validator(value) {
         return validator.isURL(value);
       },
-      message: "You must enter a valid URL",
+      message: 'You must enter a valid URL',
     },
   },
   email: {
@@ -30,7 +30,7 @@ const User = mongoose.Schema({
       validator(value) {
         return validator.isEmail(value);
       },
-      message: "You must enter a valid email",
+      message: 'You must enter a valid email',
     },
   },
   password: {
@@ -42,18 +42,18 @@ const User = mongoose.Schema({
 
 User.statics.findUserByCredentials = function findUserByCredentials(
   email,
-  password
+  password,
 ) {
   return this.findOne({ email })
-    .select("+password")
+    .select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error("Incorrect email or password"));
+        return Promise.reject(new Error('Incorrect email or password'));
       }
 
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          return Promise.reject(new Error("Incorrect email or password"));
+          return Promise.reject(new Error('Incorrect email or password'));
         }
 
         return user;
@@ -61,4 +61,4 @@ User.statics.findUserByCredentials = function findUserByCredentials(
     });
 };
 
-module.exports = mongoose.model("User", User);
+module.exports = mongoose.model('User', User);
