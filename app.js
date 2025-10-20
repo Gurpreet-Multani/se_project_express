@@ -1,29 +1,25 @@
 // imports up here---------------------------------------------------------------
-const express = require('express');
-const mongoose = require('mongoose');
-const mainRouter = require('./routes');
+const express = require("express");
+const mongoose = require("mongoose");
+const mainRouter = require("./routes");
+const cors = require("cors");
 // imports up here--------------------------------------------------------------
 
 // express
 const app = express();
 const { PORT = 3001 } = process.env;
 
-// MongoDb/mongoose
-mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db');
-
 // converts our document to json so postman can understand
 app.use(express.json()); // For parsing application/json
 
-// authorization middleware
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5d8b8592978f8bd833ca8133', // paste the _id of the test user created in the previous step
-  };
-  next();
-});
+//allows request from client to the server to be processed
+app.use(cors());
+
+// MongoDb/mongoose
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
 // users.js Routes
-app.use('/', mainRouter);
+app.use("/", mainRouter);
 
 // app/listen
 app.listen(PORT, () => {});
