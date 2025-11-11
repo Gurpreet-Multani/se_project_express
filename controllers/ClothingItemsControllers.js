@@ -1,4 +1,4 @@
-const ClothingItem = require('../models/ClothingItem');
+const ClothingItem = require("../models/ClothingItem");
 
 // Post /item
 const createItem = (req, res) => {
@@ -18,12 +18,12 @@ const createItem = (req, res) => {
       return res.send({ data: item });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
       }
 
       console.log(err);
-      return res.status(500).send({ message: 'Error from createItem' });
+      return res.status(500).send({ message: "Error from createItem" });
     });
 };
 
@@ -35,25 +35,30 @@ const getItems = (req, res) => {
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       console.log(err);
-      return res.status(500).send({ message: 'Error from getItems' });
+      return res.status(500).send({ message: "Error from getItems" });
     });
 };
 
 // Delete /items/:itemId
 const deleteitem = (req, res) => {
   const { itemId } = req.params;
+
+  if (!req.user) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+
   const userId = req.user._id;
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error('Item not found');
+      const error = new Error("Item not found");
       error.statusCode = 404;
       throw error;
     })
     .then((item) => {
       if (String(item.owner) !== userId) {
         const error = new Error(
-          'Forbidden: You can only delete your own items',
+          "Forbidden: You can only delete your own items"
         );
         error.statusCode = 403;
         throw error;
@@ -62,15 +67,15 @@ const deleteitem = (req, res) => {
     })
     .then((deletedItem) => res.status(200).send({ data: deletedItem }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid item ID' });
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID" });
       }
       if (err.statusCode === 404 || err.statusCode === 403) {
         return res.status(err.statusCode).send({ message: err.message });
       }
       return res
         .status(500)
-        .send({ message: 'An error occurred on the server' });
+        .send({ message: "An error occurred on the server" });
     });
 };
 
@@ -80,11 +85,11 @@ const likeItem = (req, res) => {
     req.params.itemId,
     // $addToSet adds a value to array
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    { new: true }
   )
     .then((item) => {
       if (item === null) {
-        return res.status(404).send({ message: 'item does not exist' });
+        return res.status(404).send({ message: "item does not exist" });
       }
 
       console.log(item);
@@ -92,14 +97,14 @@ const likeItem = (req, res) => {
     })
     .catch((err) => {
       // handle errors here
-      if (err.name === 'CastError') {
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
 
       console.log(err);
       return res
         .status(500)
-        .send({ message: 'An error has occurred on the server' });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -109,11 +114,11 @@ const dislikeItem = (req, res) => {
     req.params.itemId,
     // $pull removes user ID from array
     { $pull: { likes: req.user._id } },
-    { new: true },
+    { new: true }
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: 'Item not found' });
+        return res.status(404).send({ message: "Item not found" });
       }
       // Otherwise, send back the deleted item's data
 
@@ -121,16 +126,16 @@ const dislikeItem = (req, res) => {
     })
     .catch((err) => {
       // handle errors here
-      if (err.name === 'CastError') {
+      if (err.name === "CastError") {
         return res
           .status(400)
-          .send({ message: 'An error has occurred on the server' });
+          .send({ message: "An error has occurred on the server" });
       }
 
       console.log(err);
       return res
         .status(500)
-        .send({ message: 'An error has occurred on the dislikeItem' });
+        .send({ message: "An error has occurred on the dislikeItem" });
     });
 };
 
