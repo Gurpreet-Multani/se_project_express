@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   read_sprint_file:
     if: ${{ github.repository != 'tripleten-com/se_project_express' }}
@@ -13,10 +14,13 @@ jobs:
     steps:
       - name: Print the repository
         run: echo "Repository ${{github.repository}}"
+
       - name: Set up GitHub Actions
         uses: actions/checkout@v4
+
       - name: Check if sprint file exist
         run: bash .github/bin/check-sprint.sh
+
       - name: Get sprint number
         id: sprint
         run: echo "SPRINT_NUMBER=$(cat sprint.txt)" >> $GITHUB_OUTPUT
@@ -28,10 +32,28 @@ jobs:
     steps:
       - name: Set up GitHub Actions
         uses: actions/checkout@v4
+
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: "4.4"
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB to be ready..."
+          for i in {1..30}; do
+            if mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
+              echo "MongoDB is ready!"
+              break
+            fi
+            echo "Attempt $i: MongoDB not ready yet..."
+            sleep 1
+          done
 
       - name: Get testing lib 12
         id: testing-lib-12
@@ -52,11 +74,6 @@ jobs:
       - name: Run test config
         run: cd tests && bash ./bin/test-config.sh
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
-        with:
-          mongodb-version: "4.4"
-
       - name: Run prepare-test-endpoints
         if: ${{ needs.read_sprint_file.outputs.sprint == '12' }}
         run: cd tests && bash ./bin/prepare-test-endpoints.sh
@@ -64,8 +81,36 @@ jobs:
       - name: Installing wait-port
         run: npm install -g wait-port
 
-      - name: Run server
-        run: npm run start & wait-port -t 30000 localhost:3001
+      - name: Run server in background
+        run: |
+          echo "Starting server on port 3001..."
+          npm run start > server.log 2>&1 &
+          echo $! > server.pid
+          echo "Server PID: $(cat server.pid)"
+
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server on localhost:3001..."
+          wait-port -t 30000 localhost:3001
+          echo "Server is ready!"
+
+      - name: Verify server is responding
+        run: |
+          echo "Testing server health..."
+          curl -f http://localhost:3001/ || echo "Server health check failed but continuing..."
 
       - name: Run test endpoints
         run: cd tests && bash ./bin/test-endpoints.sh
+
+      - name: Show server logs on failure
+        if: failure()
+        run: |
+          echo "=== Server Logs ==="
+          cat server.log || echo "No server logs found"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ -f server.pid ]; then
+            kill $(cat server.pid) || true
+          fi
