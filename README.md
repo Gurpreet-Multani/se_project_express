@@ -15,4 +15,4 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 > **Note:** This project is currently in development. Features and configurations are subject to change.
 
 
-[FrontEnd-Link]([https://Gurpreet-Multani.github.io/se_project_react/](https://github.com/Gurpreet-Multani/se_project_react))
+[FrontEnd-Link](https://Gurpreet-Multani.github.io/se_project_react/)
